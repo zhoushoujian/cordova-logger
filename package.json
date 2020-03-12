@@ -1,0 +1,29 @@
+{
+	"name": "cordova-logger",
+	"version": "0.0.1",
+	"author": {
+		"name": "Shoujian Zhou",
+		"email": "qianchengyimeng@qq.com"
+	},
+	"license": "MIT",
+	"main": "cordova-logger.js",
+	"bugs": {
+		"url": "https://github.com/zhoushoujian/cordova-logger/issues"
+	},
+	"description": "A beautiful logger system for both nodejs and browser",
+	"devDependencies": {},
+	"scripts": {
+		"test": "node node_test.js "
+	},
+	"dependencies": {},
+	"homepage": "https://github.com/zhoushoujian/cordova-logger",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/zhoushoujian/cordova-logger"
+	},
+	"keywords": [
+		"cordova",
+		"logger",
+		"cordova-logger"
+	]
+}
