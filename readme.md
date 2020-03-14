@@ -7,7 +7,7 @@ You should install cordova-logger in Front-End project folder.
 
 # Usage
 ```shell
-const Logger = require("cordova-logger");  
+import Logger from "cordova-logger"
 const logger = new Logger({  
 	folder: "cordova",
 	column: "log",

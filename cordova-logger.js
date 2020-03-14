@@ -1,4 +1,4 @@
-! function (self) {
+;! function (self) {
 	let LOGGER_LEVEL = ["debug", "info", "warn", "error"],
 		loopTimes = 0,
 		deepcopy = require('./deepcopy'),
@@ -104,7 +104,7 @@
 									};
 									fileWriter.onerror = function (e) {
 										console.error("cordova-logger: write file fail" + JSON.stringify(e));
-										res()
+										res(e)
 									};
 									fileWriter.seek(fileWriter.length);
 									fileWriter.write(data);
@@ -118,19 +118,22 @@
 
 	function onErrorCreateFile(error) {
 		console.error("cordova-logger: file folder create fail!", error)
+		throw new Error("^^^^^^^^cordova-logger: file folder create fail" + error)
 	}
 
 	function onErrorLoadFs(error) {
-		navigator.splashscreen.hide();
 		console.error("cordova-logger: file system load error!", error)
+		throw new Error("^^^^^^^^cordova-logger: file system load error!" + error)
 	}
 
 	function onErrorGetDir(error) {
 		console.error("cordova-logger: file folder create fail!", error)
+		throw new Error("^^^^^^^^cordova-logger: file folder create fail" + error)
 	}
 
 	function onErrorLoadFs(error) {
 		console.error("cordova-logger: file system load fail!", error)
+		throw new Error("^^^^^^^^cordova-logger: file system load fail!" + error)
 	}
 
 	function getTime() {
@@ -169,9 +172,10 @@
 			self.logger = {};
 			LOGGER_LEVEL.map(item => {
 				self['logger'][item] = (buffer = "", ...args) => {
+					const param = [buffer, ...args]
 					if (item === 'debug') {
 						console.log(`[${getTime()}] [DEBUG]`, buffer, ...args);
-						return Promise.resolve()
+						return Promise.resolve(...param)
 					} else {
 						loopTimes = 0
 						console[item](`[${getTime()}] [${item.toUpperCase()}] `, buffer, ` [ext]`, ...args)
@@ -181,23 +185,21 @@
 								column,
 								filename
 							} = self.userConfig
-							return new Promise(res => {
-								buffer = JSON.stringify(buffer, function (key, value) {
-									return formatDataType(value)
-								}, 4)
-								let extend = [];
-								if (args.length) {
-									extend = args.map(item => dealWithItems(item));
-									if (extend.length) {
-										extend = `  [ext] ${extend.join("")}`;
-									}
+							buffer = JSON.stringify(buffer, function (key, value) {
+								return formatDataType(value)
+							}, 4)
+							let extend = [];
+							if (args.length) {
+								extend = args.map(item => dealWithItems(item));
+								if (extend.length) {
+									extend = `  [ext] ${extend.join("")}`;
 								}
-								const content = `${buffer}` + `${extend}` + "\r\n";
-								const rawData = `[${getTime()}] [${item.toUpperCase()}] ${content}`;
-								return createAndWriteFile(rawData, folder, column, filename).then(res);
-							})
+							}
+							const content = `${buffer}` + `${extend}` + "\r\n";
+							const rawData = `[${getTime()}] [${item.toUpperCase()}] ${content}`;
+							return createAndWriteFile(rawData, folder, column, filename);
 						} else {
-							return Promise.resolve()
+							return Promise.resolve(...param)
 						}
 					}
 				}
@@ -205,7 +207,7 @@
 			self.logger.userConfig = self.userConfig
 			return self.logger
 		} else {
-			throw new Error("cordova-logger config must be an object")
+			throw new Error("^^^^^^^^cordova-logger config must be an object")
 		}
 	}
 
