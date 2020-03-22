@@ -199,6 +199,7 @@
 							const rawData = `[${getTime()}] [${item.toUpperCase()}] ${content}`;
 							return createAndWriteFile(rawData, folder, column, filename);
 						} else {
+							console.log(`[${getTime()}] [${item.toUpperCase()}]`, buffer, ...args);
 							return Promise.resolve(...param)
 						}
 					}
