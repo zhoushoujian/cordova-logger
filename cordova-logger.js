@@ -84,35 +84,50 @@
 		if (!self.requestFileSystem && !self.LocalFileSystem) {
 			throw new Error("^^^^^^^^cordova-logger: please install cordova-plugin-file first")
 		}
-		return new Promise(function (res) {
-			self.requestFileSystem(self.LocalFileSystem.PERSISTENT, 0, function (fs) {
-				fs.root.getDirectory(folder, {
-					create: true
-				}, function (dirEntry) {
-					dirEntry.getDirectory(column, {
+		return new Promise(async function (res) {
+			if(self.cordovaFileWrite){
+				// cache cordova file writer api
+				const result = await writeFile(self.cordovaFileWrite, data)
+				return res(result)
+			} else {
+				return self.requestFileSystem(self.LocalFileSystem.PERSISTENT, 0, function (fs) {
+					fs.root.getDirectory(folder, {
 						create: true
-					}, function (subDirEntry) {
-						subDirEntry.getFile(
-							filename, {
-								create: true,
-								exclusive: false
-							},
-							function (fileEntry) {
-								fileEntry.createWriter(function (fileWriter) {
-									fileWriter.onwriteend = function () {
-										res(data)
-									};
-									fileWriter.onerror = function (e) {
-										console.error("cordova-logger: write file fail" + JSON.stringify(e));
-										res(e)
-									};
-									fileWriter.seek(fileWriter.length);
-									fileWriter.write(data);
-								});
-							}, onErrorCreateFile);
-					}, onErrorLoadFs);
+					}, function (dirEntry) {
+						dirEntry.getDirectory(column, {
+							create: true
+						}, function (subDirEntry) {
+							subDirEntry.getFile(
+								filename, {
+									create: true,
+									exclusive: false
+								},
+								function (fileEntry) {
+									fileEntry.createWriter(async function (fileWriter) {
+										self.cordovaFileWrite = fileWriter
+										const result = await writeFile(fileWriter, data)
+										res(result)
+									});
+								}, onErrorCreateFile);
+						}, onErrorLoadFs);
+					}, onErrorGetDir);
 				}, onErrorGetDir);
-			}, onErrorGetDir);
+			}
+
+		})
+	}
+
+	function writeFile(fileWriter, data){
+		return new Promise((resolve) => {
+			fileWriter.onwriteend = function () {
+				resolve(data)
+			};
+			fileWriter.onerror = function (e) {
+				console.error("cordova-logger: write file fail" + JSON.stringify(e));
+				resolve(e)
+			};
+			fileWriter.seek(fileWriter.length);
+			fileWriter.write(data);
 		})
 	}
 
@@ -170,7 +185,7 @@
 			self.userConfig.column = (typeof (self.userConfig.column) === 'string' ? self.userConfig.column : "log")
 			self.userConfig.filename = (typeof (self.userConfig.filename) === 'string' ? self.userConfig.filename : "logger.log")
 			self.logger = {};
-			LOGGER_LEVEL.map(item => {
+			LOGGER_LEVEL.forEach(item => {
 				self['logger'][item] = (buffer = "", ...args) => {
 					const param = [buffer, ...args]
 					if (item === 'debug') {
@@ -245,7 +260,6 @@
 								create: true
 							},
 							function (subDirEntry) {
-								//持久化数据保存
 								subDirEntry.getFile(
 									file, {
 										create: true,
