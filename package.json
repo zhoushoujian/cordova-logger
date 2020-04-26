@@ -1,20 +1,17 @@
 {
 	"name": "cordova-logger",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"author": {
 		"name": "Shoujian Zhou",
 		"email": "qianchengyimeng@qq.com"
 	},
 	"license": "MIT",
-	"main": "cordova-logger.js",
+	"main": "cordova-logger.min.js",
 	"bugs": {
 		"url": "https://github.com/zhoushoujian/cordova-logger/issues"
 	},
-	"description": "A beautiful logger system for both nodejs and browser",
+	"description": "Cordova logger for android",
 	"devDependencies": {},
-	"scripts": {
-		"test": "node node_test.js "
-	},
 	"dependencies": {},
 	"homepage": "https://github.com/zhoushoujian/cordova-logger",
 	"repository": {
