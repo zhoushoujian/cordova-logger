@@ -81,10 +81,19 @@
 	}
 
 	function createAndWriteFile(data = "", folder, column, filename) {
-		if (!self.requestFileSystem && !self.LocalFileSystem) {
-			throw new Error("^^^^^^^^cordova-logger: please install cordova-plugin-file first")
-		}
-		return new Promise(async function (res) {
+		return new Promise(function (res) {
+			if (!self.requestFileSystem && !self.LocalFileSystem) {
+				self.logger.queue =[]
+				self.logger.tempQueue.push(data)
+				console.warn("^^^^^^^^cordova-logger: please install cordova-plugin-file first data", data)
+				return res(data)
+			} else {
+				if(self.logger.tempQueue.length){
+					data = self.logger.tempQueue[0]
+					self.logger.queue = [...self.logger.tempQueue, ...self.logger.queue]
+					self.logger.tempQueue = []
+				}
+			}
 			return self.requestFileSystem(self.LocalFileSystem.PERSISTENT, 0, function (fs) {
 				fs.root.getDirectory(folder, {
 					create: true
@@ -139,7 +148,8 @@
 			self.userConfig.filename = (typeof (self.userConfig.filename) === 'string' ? self.userConfig.filename : "logger.log")
 			self.logger = {
 				userConfig: self.userConfig,
-				queue: []
+				queue: [],
+				tempQueue: []
 			};
 			LOGGER_LEVEL.forEach(item => {
 				self['logger'][item] = (buffer = "", ...args) => {
@@ -188,23 +198,23 @@
 	}
 
 	function onErrorCreateFile(error) {
+		self.logger.queue =[]
 		console.error("cordova-logger: file folder create fail!", error)
-		throw new Error("^^^^^^^^cordova-logger: file folder create fail" + error)
 	}
 
 	function onErrorLoadFs(error) {
+		self.logger.queue =[]
 		console.error("cordova-logger: file system load error!", error)
-		throw new Error("^^^^^^^^cordova-logger: file system load error!" + error)
 	}
 
 	function onErrorGetDir(error) {
+		self.logger.queue =[]
 		console.error("cordova-logger: file folder create fail!", error)
-		throw new Error("^^^^^^^^cordova-logger: file folder create fail" + error)
 	}
 
 	function onErrorLoadFs(error) {
+		self.logger.queue =[]
 		console.error("cordova-logger: file system load fail!", error)
-		throw new Error("^^^^^^^^cordova-logger: file system load fail!" + error)
 	}
 
 	function getTime() {
@@ -236,7 +246,7 @@
 
 	Logger.prototype.checkFileWritePriority = function () {
 		if (!self.permissions) {
-			throw new Error("^^^^^^^^cordova-logger: please install cordova-plugin-android-permissions first")
+			return console.warn("^^^^^^^^cordova-logger: please install cordova-plugin-android-permissions first")
 		}
 		return new Promise(res => {
 			if (isAndroidApp) {
@@ -255,7 +265,7 @@
 
 	Logger.prototype.requestFileWritePriority = function (folder, column, file) {
 		if (!self.requestFileSystem && !self.LocalFileSystem) {
-			throw new Error("^^^^^^^^cordova-logger: please install cordova-plugin-file first")
+			return console.warn("^^^^^^^^cordova-logger: please install cordova-plugin-file first")
 		}
 		return new Promise(res => {
 			if (isAndroidApp) {
@@ -291,7 +301,7 @@
 
 	Logger.prototype.checkExternalFileExistOrNot = function (filename) {
 		if (!self.requestFileSystem && !self.LocalFileSystem) {
-			throw new Error("^^^^^^^^cordova-logger: please install cordova-plugin-file first")
+			return console.warn("^^^^^^^^cordova-logger: please install cordova-plugin-file first")
 		}
 		return new Promise((resolve) => {
 			self.resolveLocalFileSystemURL(

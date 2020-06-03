@@ -1,12 +1,12 @@
 {
 	"name": "cordova-logger",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"author": {
 		"name": "Shoujian Zhou",
 		"email": "qianchengyimeng@qq.com"
 	},
 	"license": "MIT",
-	"main": "cordova-logger.min.js",
+	"main": "cordova-logger.js",
 	"bugs": {
 		"url": "https://github.com/zhoushoujian/cordova-logger/issues"
 	},
