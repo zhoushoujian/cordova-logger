@@ -300,7 +300,7 @@
 	}
 
 	Logger.prototype.checkExternalFileExistOrNot = function (filename) {
-		if (!self.requestFileSystem && !self.LocalFileSystem) {
+		if (!self.resolveLocalFileSystemURL) {
 			return console.warn("^^^^^^^^cordova-logger: please install cordova-plugin-file first")
 		}
 		return new Promise((resolve) => {
