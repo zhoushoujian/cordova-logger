@@ -1,4 +1,4 @@
-;! function (self) {
+; ! function (self) {
 	let LOGGER_LEVEL = ["debug", "info", "warn", "error"],
 		loopTimes = 0,
 		deepcopy = require('./deepcopy'),
@@ -83,12 +83,12 @@
 	function createAndWriteFile(data = "", folder, column, filename) {
 		return new Promise(function (res) {
 			if (!self.requestFileSystem && !self.LocalFileSystem) {
-				self.logger.queue =[]
+				self.logger.queue = []
 				self.logger.tempQueue.push(data)
 				console.warn("^^^^^^^^cordova-logger: please install cordova-plugin-file first data", data)
 				return res(data)
 			} else {
-				if(self.logger.tempQueue.length){
+				if (self.logger.tempQueue.length) {
 					data = self.logger.tempQueue[0]
 					self.logger.queue = [...self.logger.tempQueue, ...self.logger.queue]
 					self.logger.tempQueue = []
@@ -103,15 +103,15 @@
 					}, function (subDirEntry) {
 						subDirEntry.getFile(
 							filename, {
-								create: true,
-								exclusive: false
-							},
+							create: true,
+							exclusive: false
+						},
 							function (fileEntry) {
 								fileEntry.createWriter(async function (fileWriter) {
 									fileWriter.onwriteend = function () {
 										res(data)
 										self.logger.queue.shift()
-										if(self.logger.queue.length){
+										if (self.logger.queue.length) {
 											return createAndWriteFile(self.logger.queue.slice(0, 1)[0], folder, column, filename)
 										}
 									};
@@ -119,7 +119,7 @@
 										console.error("cordova-logger: write file fail", e);
 										res(e)
 										self.logger.queue.shift()
-										if(self.logger.queue.length){
+										if (self.logger.queue.length) {
 											return createAndWriteFile(self.logger.queue.slice(0, 1)[0], folder, column, filename)
 										}
 									};
@@ -131,13 +131,13 @@
 				}, onErrorGetDir);
 			}, onErrorGetDir);
 		})
-		.catch(err => {
-			console.error("cordova-logger createAndWriteFile pronmise err", err)
-			self.logger.queue.shift()
-			if(self.logger.queue.length){
-				return createAndWriteFile(self.logger.queue.slice(0, 1), folder, column, filename)
-			}
-		})
+			.catch(err => {
+				console.error("cordova-logger createAndWriteFile pronmise err", err)
+				self.logger.queue.shift()
+				if (self.logger.queue.length) {
+					return createAndWriteFile(self.logger.queue.slice(0, 1), folder, column, filename)
+				}
+			})
 	}
 
 	function Logger(config) {
@@ -178,7 +178,7 @@
 							}
 							const content = `${buffer}` + `${extend}` + "\r\n";
 							const rawData = `[${getTime()}] [${item.toUpperCase()}] ${content}`;
-							if(!self.logger.queue.length){
+							if (!self.logger.queue.length) {
 								self.logger.queue.push(rawData)
 								return createAndWriteFile(rawData, folder, column, filename);
 							} else {
@@ -198,23 +198,18 @@
 	}
 
 	function onErrorCreateFile(error) {
-		self.logger.queue =[]
+		self.logger.queue = []
 		console.error("cordova-logger: file folder create fail!", error)
 	}
 
 	function onErrorLoadFs(error) {
-		self.logger.queue =[]
+		self.logger.queue = []
 		console.error("cordova-logger: file system load error!", error)
 	}
 
 	function onErrorGetDir(error) {
-		self.logger.queue =[]
+		self.logger.queue = []
 		console.error("cordova-logger: file folder create fail!", error)
-	}
-
-	function onErrorLoadFs(error) {
-		self.logger.queue =[]
-		console.error("cordova-logger: file system load fail!", error)
 	}
 
 	function getTime() {
@@ -274,14 +269,14 @@
 						create: true
 					}, function (dirEntry) {
 						dirEntry.getDirectory(column, {
-								create: true
-							},
+							create: true
+						},
 							function (subDirEntry) {
 								subDirEntry.getFile(
 									file, {
-										create: true,
-										exclusive: false
-									},
+									create: true,
+									exclusive: false
+								},
 									function (fileEntry) {
 										res()
 									},
@@ -309,9 +304,9 @@
 				function (fs) {
 					fs.getFile(
 						filename, {
-							create: false,
-							exclusive: true
-						},
+						create: false,
+						exclusive: true
+					},
 						function (fileEntry) {
 							resolve(true)
 						},
